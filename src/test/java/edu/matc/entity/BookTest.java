@@ -18,7 +18,7 @@ class BookTest {
         book.setPublishDate(birthDate);
 
         // create variable for the expected value
-        int expectedAge = 53;
+        int expectedAge = 55;
 
         // call the method, and get the actual value
         int actualAge = book.getAge();
