@@ -30,5 +30,10 @@ pipeline {
                 }
             }
         }
+        stage ('Deploy-App'){
+            steps {
+                deploy adapters: [tomcat9(credentialsId: 'admin', path: '', url: 'http://54.163.128.202:8080/')], contextPath: '', war: '**/*.war ' 
+            }
+        }
     }
 }
