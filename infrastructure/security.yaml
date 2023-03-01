@@ -1,0 +1,37 @@
+Resources:
+  
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId: !ImportValue book-management-vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  WebEC2InstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - LabRole
+Outputs:
+  
+  WebServerSecurityGroupId:
+    Description: The security group to allow HTTP and SSH to our web server
+    Value: !GetAtt WebServerSecurityGroup.GroupId
+    Export:
+      Name: !Sub "${AWS::StackName}-WebServerSecurityGroupId"
+  
+  WebEC2InstanceProfile:
+    Description: Instance profile for our Web Server
+    Value: !Ref WebEC2InstanceProfile
+    Export:
+      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
+  

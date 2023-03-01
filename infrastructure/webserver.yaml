@@ -1,0 +1,55 @@
+Parameters:
+  InstanceType:
+    Default: t2.micro
+    Type: String
+    Description: Sizing for our EC2 Instance
+  KeyName:
+    Default: vockey
+    Type: String
+    Description: Key access for EC2 web server
+
+  Stage:
+    Default: dev
+    Type: String
+    Description: Default environment to create
+Resources:
+  WebServerNode1:
+    Type: AWS::EC2::Instance
+    Properties:
+        InstanceType: !Ref InstanceType
+        ImageId: ami-0b898040803850657
+        KeyName: !Ref KeyName
+        IamInstanceProfile: !ImportValue book-management-security-WebEC2InstanceProfile
+        UserData: 
+            Fn::Base64: 
+             
+             !Sub |
+                #!/bin/bash             
+                    yum update -y
+                    yum install -y tomcat
+                    yum install -y tomcat-webapps
+                    yum install -y tomcat-admin-webapps
+                    echo Stack="${AWS::StackName}" >> /usr/share/tomcat/conf/tomcat.conf
+                    aws s3api get-object --bucket tomcat-book-config-jt --key tomcat-users.xml /usr/share/tomcat/conf/tomcat-users.xml
+                    service tomcat start
+                    systemctl enable tomcat.service
+        SecurityGroupIds:
+          - !ImportValue book-management-security-WebServerSecurityGroupId
+        SubnetId: !ImportValue book-management-vpc-PublicSubnet1
+        Tags: 
+          - 
+            Key: "Name"
+            Value: !Sub "${AWS::StackName}"
+  
+Outputs:
+  WebServerURL:
+    Description: "URL to access our Tomcat Server"
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - WebServerNode1
+          - PublicIp
+        - ':8080'
+    Export:
+      Name: !Sub "${AWS::StackName}-TomcatURL"
