@@ -12,12 +12,12 @@ Resources:
         - Key: "Name"
           Value: !Sub "${AWS::StackName}-staging"
 Outputs: 
-  WebEIPDev:
+  BookWebEIPDev:
     Description: Elastic IP for our Web Server
     Value: !Ref BookWebEIPDev
     Export:
       Name: !Sub "BookWebEIP-${AWS::StackName}-dev"
-  WebEIPStaging:
+  BookWebEIPStaging:
     Description: Elastic IP for our Web Server
     Value: !Ref BookWebEIPStaging 
     Export:
