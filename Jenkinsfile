@@ -30,6 +30,19 @@ pipeline {
                 }
             }
         }
+        stage ('Deploy-Dev-Infrastructure') {
+            steps {
+                sh """
+                    aws cloudformation deploy --stack-name book-management-vpc --template-file ./infrastructure/vpc.yaml --region us-east-1 --no-fail-on-empty-changeset
+
+                    aws cloudformation deploy --stack-name book-management-ip --template-file ./infrastructure/ip.yaml --region us-east-1 --no-fail-on-empty-changeset
+
+                    aws cloudformation deploy --stack-name book-management-security --template-file ./infrastructure/security.yaml --capabilities CAPABILITY_NAMED_IAM --region us-east-1 --no-fail-on-empty-changeset
+
+                    aws cloudformation deploy --stack-name book-management-web --template-file ./infrastructure/webserver.yaml --region us-east-1 --no-fail-on-empty-changeset
+                """
+            }
+        }
         stage ('Deploy-App'){
             steps {
                 deploy adapters: [tomcat9(credentialsId: 'admin', path: '', url: 'http://54.163.128.202:8080/')], contextPath: '', war: '**/*.war ' 
