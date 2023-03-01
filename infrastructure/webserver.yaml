@@ -40,7 +40,15 @@ Resources:
           - 
             Key: "Name"
             Value: !Sub "${AWS::StackName}"
-  
+  WebEIP:
+      Type: AWS::EC2::EIPAssociation
+      Properties: 
+        EIP: 
+          Fn::ImportValue: 
+            Fn::Sub:
+              'BookWebEIP-book-management-ip-${Stage}'
+        InstanceId: !Ref WebServerNode1
+
 Outputs:
   WebServerURL:
     Description: "URL to access our Tomcat Server"
