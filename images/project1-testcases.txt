@@ -1,0 +1,12 @@
+Test cases in no particular order
+
+1. Test that user story is met by testing that book data is retrievable and accessible. 
+
+2. Test that the web server can function with varied traffic loads
+
+3. Test that the Public and Private subnets are not in the same availability zones. 
+
+4. Test that the SecurityGroup Ingress rules for SSH are not too open
+
+5. Test ease of use functionality of book management, is the application intuitive or too hard 
+   to use? 
