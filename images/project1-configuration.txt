@@ -1,0 +1,6 @@
+Five Configurations differ between development and production environments
+
+I would say some things that could be different between development and production environments
+would include, size of scale of production (probably bigger in production than development), 
+production will have real data (actual books?), production will have services spread across more services I'm guessing a database will come in to play at some point and that probably won't be
+on the same server as web, more emphasis on security in production, and capacity will be more robust in production versus development
