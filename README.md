@@ -1,6 +1,8 @@
 # Book Management Exercise
 This exercise will provide you with the necessary java project to create a pipeline for Cloud Automation/DevOps.  We will use this for our Project 1, 2 and 3.
 
+TEST
+
 ## Getting Started
 To begin using this project:
 
