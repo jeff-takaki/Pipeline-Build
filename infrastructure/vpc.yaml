@@ -162,6 +162,13 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
       SubnetId: !Ref PrivateSubnet2
+  DBSubnetGroup:
+    Properties:
+      DBSubnetGroupDescription: DBSubnetGroup for RDS instances
+      SubnetIds:
+        - Ref: PrivateSubnet1
+        - Ref: PrivateSubnet2
+    Type: AWS::RDS::DBSubnetGroup
 
 Outputs:
   VPC:
@@ -201,3 +208,10 @@ Outputs:
     Value: !Ref PrivateSubnet2
     Export:
       Name: !Sub "${AWS::StackName}-PrivateSubnet2"
+
+  DBSubnetGroup:
+    Description: Subnet group for my RDS instance
+    Value: !Ref DBSubnetGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-DBSubnetGroup"
+ 
