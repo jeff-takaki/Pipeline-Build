@@ -41,8 +41,11 @@ pipeline {
 
                     aws cloudformation deploy --stack-name book-management-web --template-file ./infrastructure/webserver.yaml --region us-east-1 --no-fail-on-empty-changeset
 
-                    aws cloudformation deploy --stack-name book-management-db --template-file ./db.yaml --region us-east-1 --capabilities CAPABILITY_NAMED_IAM --no-fail-on-empty-changeset
-                """
+                    aws cloudformation deploy --stack-name book-management-db --template-file ./infrastructure/db.yaml --region us-east-1 --no-fail-on-empty-changeset
+                    
+                    """
+
+                    
             }
         }
         stage ('Deploy-App'){
