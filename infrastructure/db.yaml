@@ -12,9 +12,6 @@ Parameters:
   DBSnapshotName:
     Type: String
     Default: "book-dev"
-  DBName:
-    Type: String
-    Default: "bookmanagement"
 Resources:
   DatabaseInstance:
        Type: AWS::RDS::DBInstance
@@ -24,7 +21,6 @@ Resources:
            DBInstanceIdentifier: !Join ["-",["book-management-db", !Ref Stage]]
            MasterUserPassword: !Ref DBPassword
            DBInstanceClass: db.t2.micro
-           DBName: !Ref DBName
            AllocatedStorage: '5'
            PubliclyAccessible: false
            VPCSecurityGroups: 
@@ -32,6 +28,7 @@ Resources:
            DBSubnetGroupName: !ImportValue book-management-vpc-DBSubnetGroup
            BackupRetentionPeriod: 0
            DeleteAutomatedBackups: true
+           DBSnapshotIdentifier: !Ref DBSnapshotName
        DeletionPolicy: Delete
 Outputs:
   DBEndpointAddress:

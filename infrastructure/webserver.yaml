@@ -30,6 +30,7 @@ Resources:
                     yum install -y tomcat-webapps
                     yum install -y tomcat-admin-webapps
                     echo Stack="${AWS::StackName}" >> /usr/share/tomcat/conf/tomcat.conf
+                    echo Stage="${Stage}" >> /usr/share/tomcat/conf/tomcat.conf
                     aws s3api get-object --bucket tomcat-book-config-jt --key tomcat-users.xml /usr/share/tomcat/conf/tomcat-users.xml
                     service tomcat start
                     systemctl enable tomcat.service
