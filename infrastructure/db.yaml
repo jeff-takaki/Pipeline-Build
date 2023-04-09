@@ -1,0 +1,41 @@
+Parameters:
+  DBUser:
+    Type: String
+    Default: "{{resolve:secretsmanager:book-management-db-credentials:SecretString:username}}"
+  DBPassword:
+    Type: String
+    Default: "{{resolve:secretsmanager:book-management-db-credentials:SecretString:password}}"
+    NoEcho: True
+  Stage:
+    Type: String
+    Default: "dev"
+  DBSnapshotName:
+    Type: String
+    Default: "book-dev"
+  DBName:
+    Type: String
+    Default: "bookmanagement"
+Resources:
+  DatabaseInstance:
+       Type: AWS::RDS::DBInstance
+       Properties:
+           Engine: mysql
+           MasterUsername: !Ref DBUser
+           DBInstanceIdentifier: !Join ["-",["book-management-db", !Ref Stage]]
+           MasterUserPassword: !Ref DBPassword
+           DBInstanceClass: db.t2.micro
+           DBName: !Ref DBName
+           AllocatedStorage: '5'
+           PubliclyAccessible: false
+           VPCSecurityGroups: 
+           - !ImportValue book-management-security-DBSecurityGroup
+           DBSubnetGroupName: !ImportValue book-management-vpc-DBSubnetGroup
+           BackupRetentionPeriod: 0
+           DeleteAutomatedBackups: true
+       DeletionPolicy: Delete
+Outputs:
+  DBEndpointAddress:
+    Description: A reference to the private subnet in the 2nd Availability Zone
+    Value: !GetAtt DatabaseInstance.Endpoint.Address 
+    Export: 
+      Name: !Sub "${Stage}-DBURL"
