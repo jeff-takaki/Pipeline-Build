@@ -1,0 +1,7 @@
+{
+    "Parameters" : {
+        "KeyName" : "vockey",
+        "Stage" : "staging",
+        "InstanceType" : "t2.micro"
+  }
+}
