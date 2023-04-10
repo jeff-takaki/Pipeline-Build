@@ -48,6 +48,11 @@ pipeline {
                     
             }
         }
+        stage('Ping-Web-Dev'){
+            steps{
+                ansiblePlaybook become: true, credentialsId: 'ssh', disableHostKeyChecking: true, installation: 'ansible', inventory: 'ansible/inventory.yaml', playbook: 'ansible/ping.yaml'
+            }
+        }
         stage ('Deploy-Dev-App'){
             steps {
                 deploy adapters: [tomcat9(credentialsId: 'admin', path: '', url: 'http://54.163.128.202:8080/')], contextPath: '', war: '**/*.war ' 

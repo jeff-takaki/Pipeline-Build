@@ -1,0 +1,8 @@
+virtualmachines:
+  hosts:
+    book_management_web:
+      ansible_host: 54.163.128.202
+      ansible_user: ec2-user
+    jenkins:
+      ansible_host: 44.214.23.187
+      ansible_user: ubuntu
