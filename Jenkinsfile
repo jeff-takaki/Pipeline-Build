@@ -39,7 +39,7 @@ pipeline {
 
                     aws cloudformation deploy --stack-name book-management-security --template-file ./infrastructure/security.yaml --capabilities CAPABILITY_NAMED_IAM --region us-east-1 --no-fail-on-empty-changeset
 
-                    aws cloudformation deploy --stack-name book-management-web-dev --template-file ./infrastructure/webserver-bg.yaml --region us-east-1 --no-fail-on-empty-changeset --parameter-overrides file://infrastructure/webserver-param-dev.json
+                    aws cloudformation deploy --stack-name book-management-web-dev --template-file ./infrastructure/webserver-bg.yaml --region us-east-1 --no-fail-on-empty-changeset --parameter-overrides file://infrastructure/webserver-param-dev-green.json
 
                     #aws cloudformation deploy --stack-name book-management-db-dev --template-file ./infrastructure/db.yaml --region us-east-1 --no-fail-on-empty-changeset --parameter-overrides file://infrastructure/db-param-dev.json
                     
