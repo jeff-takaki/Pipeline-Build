@@ -1,5 +1,5 @@
 - name: Ping a Server
-  hosts: web
+  hosts: web-blue,web-green
   tasks:
    - name: Ping my hosts
      ansible.builtin.ping:
