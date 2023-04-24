@@ -11,6 +11,10 @@ Resources:
           ToPort: 8080
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
@@ -44,6 +48,12 @@ Outputs:
     Value: !Ref WebEC2InstanceProfile
     Export:
       Name: !Sub "${AWS::StackName}-WebEC2InstanceProfile"
+  
+  WebEC2InstanceProfileArn:
+    Description: Instance profile ARN for our Web Server
+    Value: !GetAtt WebEC2InstanceProfile.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-WebEC2InstanceProfileArn"
 
   DBSecurityGroup:
     Description: SG for allowing web server to communicate with database

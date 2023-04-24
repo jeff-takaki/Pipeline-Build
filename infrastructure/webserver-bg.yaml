@@ -1,0 +1,169 @@
+Parameters: 
+  InstanceType:
+    Default: t2.micro
+    Type: String
+    Description: Sizing for EC2 Instances
+  KeyName:
+    Default: vockey
+    Type: String
+    Description: Key to access EC2 Instances via SSH
+  Stage:
+    Default: dev
+    Type: String
+    Description: Default Environment to Create
+  BlueWeight:
+    Default: 1
+    Type: String
+    Description: LB Weight for Blue Instance(s)
+  GreenWeight:
+    Default: 1
+    Type: String
+    Description: LB Weight for Green Instance(s)
+
+Resources:
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
+      LaunchTemplateData: 
+        ImageId: ami-0b898040803850657
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile: 
+          Arn: !ImportValue book-management-security-WebEC2InstanceProfileArn
+        KeyName: !Ref KeyName
+        SecurityGroupIds: 
+          - !ImportValue book-management-security-WebServerSecurityGroupId
+        UserData: 
+          Fn::Base64: 
+             
+           !Sub |
+              #!/bin/bash             
+                  yum update -y
+                  yum install -y tomcat
+                  yum install -y tomcat-webapps
+                  yum install -y tomcat-admin-webapps
+                  echo Stage="${Stage}" >> /usr/share/tomcat/conf/tomcat.conf
+                  aws s3api get-object --bucket tomcat-book-config-jt --key tomcat-users.xml /usr/share/tomcat/conf/tomcat-users.xml
+                  service tomcat start
+                  systemctl enable tomcat.service
+                  yum install -y ruby
+                  aws s3 cp s3://aws-codedeploy-us-east-1/latest/install . --region us-east-1
+                  chmod +x ./install
+                  ./install auto
+
+
+  BlueEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !ImportValue book-management-vpc-PublicSubnet1
+      KeyName: !Ref KeyName
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber 
+      Tags: 
+          - 
+            Key: "Name"
+            Value: !Sub "${AWS::StackName}-blue"
+
+  GreenEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      SubnetId: !ImportValue book-management-vpc-PublicSubnet1
+      KeyName: !Ref KeyName
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber 
+      Tags: 
+          - 
+            Key: "Name"
+            Value: !Sub "${AWS::StackName}-green"    
+
+# Target Group, Listener and Application  Load Balancer
+  BlueTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: BlueTargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      Targets:
+      - Id: !Ref BlueEC2Instance
+        Port: 8080
+      UnhealthyThresholdCount: 3
+      VpcId: !ImportValue book-management-vpc
+
+# Target Group, Listener and Application  Load Balancer
+  GreenTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: GreenTargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      Targets:
+      - Id: !Ref GreenEC2Instance
+        Port: 8080
+      UnhealthyThresholdCount: 3
+      VpcId: !ImportValue book-management-vpc
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref BlueTargetGroup
+                Weight: !Ref BlueWeight
+              - TargetGroupArn: !Ref GreenTargetGroup
+                Weight: !Ref GreenWeight
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      Subnets:
+      - !ImportValue book-management-vpc-PublicSubnet1
+      - !ImportValue book-management-vpc-PublicSubnet2
+      SecurityGroups:
+        - !ImportValue book-management-security-WebServerSecurityGroupId
+
+  BlueWebEIP:
+    Type: AWS::EC2::EIPAssociation
+    Properties: 
+      EIP: 
+        Fn::ImportValue: 
+          Fn::Sub:
+            'BookWebEIP-book-management-ip-${Stage}'
+      InstanceId: !Ref BlueEC2Instance
+
+Outputs:
+  LoadBalancerURL:
+    Description: "URL to access our Tomcat Server"
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - ApplicationLoadBalancer
+          - DNSName
+    Export:
+      Name: !Sub "${AWS::StackName}-TomcatURL"
