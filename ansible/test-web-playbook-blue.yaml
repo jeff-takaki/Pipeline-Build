@@ -1,0 +1,6 @@
+- name: Test user management
+  hosts: web
+  tasks:
+   - name: Check that you can connect (GET) to a page and it returns a status 200
+     ansible.builtin.uri:
+        url: http://54.163.128.202:8080/BookManagement
