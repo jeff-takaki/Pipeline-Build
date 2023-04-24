@@ -3,7 +3,7 @@
         "KeyName" : "vockey",
         "Stage" : "dev",
         "InstanceType" : "t2.micro",
-        "BlueWeight" : 1,
+        "BlueWeight" : 0,
         "GreenWeight" : 1
   }
 }
