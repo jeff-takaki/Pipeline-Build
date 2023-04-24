@@ -87,7 +87,7 @@ pipeline {
                 deploy adapters: [tomcat9(credentialsId: 'admin', path: '', url: 'http://54.163.128.202:8080/')], contextPath: '', war: '**/*.war ' 
             }
         }
-        stage('Test-Green-Book-Management'){
+        stage('Test-Blue-Book-Management'){
             steps{
                 ansiblePlaybook become: true, credentialsId: 'ssh', disableHostKeyChecking: true, installation: 'ansible', inventory: 'ansible/inventory.yaml', playbook: 'ansible/test-web-playbook-blue.yaml'
             }
