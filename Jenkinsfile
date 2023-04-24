@@ -48,7 +48,7 @@ pipeline {
                     
             }
         }
-        stage('Ping-Web-Dev'){
+        stage('Ping-Web-Green-Dev'){
             steps{
                 ansiblePlaybook become: true, credentialsId: 'ssh', disableHostKeyChecking: true, installation: 'ansible', inventory: 'ansible/inventory.yaml', playbook: 'ansible/ping-web-playbook.yaml'
             }
@@ -77,7 +77,7 @@ pipeline {
                     
             }
         }
-        stage('Ping-Web-Dev'){
+        stage('Ping-Web-Blue-Dev'){
             steps{
                 ansiblePlaybook become: true, credentialsId: 'ssh', disableHostKeyChecking: true, installation: 'ansible', inventory: 'ansible/inventory.yaml', playbook: 'ansible/ping-web-playbook.yaml'
             }
