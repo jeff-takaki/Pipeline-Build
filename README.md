@@ -31,5 +31,5 @@ multiple stacks at a time with a bash script.
 ![alt text](https://github.com/jtakaki-matc/Pipeline-Build/blob/main/images/project3-step1-pipeline.jpg)
 
 
-Infrastructure Diagram 
+## Infrastructure Diagram 
 ![alt text](https://github.com/jtakaki-matc/Pipeline-Build/blob/main/images/Book%20Management%20Inf.png)
